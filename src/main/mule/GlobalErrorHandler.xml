@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd">
+	<error-handler name="error-sf-Error_Handler" doc:id="f246b2bf-3cbd-49c6-a2bf-678b3a0bfc4f" >
+
+            <on-error-propagate type="APIKIT:BAD_REQUEST">
+                <set-variable value='#[{"statusCode": "400",&#10;	"message": "Bad request"&#10;}]' doc:name="httpStatus-400" doc:id="319a9981-29a1-4de7-bfeb-34818e701f01" variableName="Status"/>
+			<flow-ref doc:name="Flow Reference" doc:id="d52dc642-e198-4633-a83a-91faf77f255f" name="error-framework-sf-Sub_Flow"/>
+            
+</on-error-propagate>
+            <on-error-propagate type="APIKIT:NOT_FOUND">
+                <set-variable value='#[{"statusCode": "404",&#10;	"message": "Resource not found"&#10;}]' doc:name="httpStatus-404" doc:id="fa814c30-1202-451c-9df0-15c5908f8eed" variableName="Status"/>
+			<flow-ref doc:name="Flow Reference" doc:id="916fddb3-2bd0-4bad-8baf-d0d82c2889ff" name="error-framework-sf-Sub_Flow"/>
+            
+</on-error-propagate>
+            <on-error-propagate type="APIKIT:METHOD_NOT_ALLOWED">
+                <set-variable doc:name="httpStatus-405" doc:id="b2a0c461-b3b3-4ad3-a2e9-5044dc79b957" variableName="Status" value='#[{"statusCode": "405",&#10;	"message": "Method not allowed"&#10;}]'/>
+			<flow-ref doc:name="Flow Reference" doc:id="dad024e5-555a-4428-90c3-b1ba040b3c48" name="error-framework-sf-Sub_Flow"/>
+            
+</on-error-propagate>
+            <on-error-propagate type="APIKIT:NOT_ACCEPTABLE">
+                <set-variable value='#[{"statusCode": "406",&#10;	"message": "Not acceptable"&#10;}]' doc:name="httpStatus-406" doc:id="f8bbd7c3-c322-4a30-aa6c-447ec9dfd2f2" variableName="Status"/>
+			<flow-ref doc:name="Flow Reference" doc:id="3284b3fa-56cd-4cac-b4d0-52dd89542e2c" name="error-framework-sf-Sub_Flow"/>
+            
+</on-error-propagate>
+            <on-error-propagate type="APIKIT:UNSUPPORTED_MEDIA_TYPE">
+                <set-variable value='#[{"statusCode": "415",&#10;	"message": "Unsupported media type"&#10;}]' doc:name="httpStatus-415" doc:id="e153fb44-3328-4a29-9656-cb05dad76854" variableName="Status"/>
+			<flow-ref doc:name="Flow Reference" doc:id="3eb8443b-29d7-4e04-87e2-87087482bdd5" name="error-framework-sf-Sub_Flow"/>
+            
+</on-error-propagate>
+            <on-error-propagate type="APIKIT:NOT_IMPLEMENTED">
+                <set-variable value='#[{"statusCode": "501",&#10;	"message": "Not Implemented"&#10;}]' doc:name="httpStatus-501" doc:id="bc4932a0-ad4e-445d-b43e-847521ebde77" variableName="Status"/>
+			<flow-ref doc:name="Flow Reference" doc:id="18d2b547-0b75-4a2d-bd2e-a671d5bd2829" name="error-framework-sf-Sub_Flow"/>
+            
+</on-error-propagate>
+		<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="cea2b467-6350-4717-82a5-2c392028767f" type="SALESFORCE-COMPOSITE:CONNECTIVITY">
+			<set-variable value='#[{"statusCode": "500",&#10;	"message": "CONNECTIVITY ERROR"&#10;}]' doc:name="httpStatus-500" doc:id="f6f72d8c-6544-4838-9e16-e80da60a7f0d" variableName="Status"/>
+			<flow-ref doc:name="Flow Reference" doc:id="c59ffd00-1d87-4123-b641-095f81fc1693" name="error-framework-sf-Sub_Flow"/>
+		</on-error-propagate>
+		<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="7d5bf0ea-2227-4754-9dd9-2565dcba581c" type="SALESFORCE-COMPOSITE:INVALID_SESSION">
+			<set-variable value='#[{"statusCode": "500",
+	"message": error.errorType.identifier
+}]' doc:name="httpStatus-500" doc:id="97467140-229e-40c3-8469-af1fdec4fcb5" variableName="Status"/>
+			<flow-ref doc:name="Flow Reference" doc:id="449a56ca-ef5c-4651-ad74-937013d6fcdc" name="error-framework-sf-Sub_Flow"/>
+		</on-error-propagate>
+		<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="987ef260-6fd0-44c2-ae67-13cf6173008a" type="SALESFORCE-COMPOSITE:RETRY_EXHAUSTED">
+			<set-variable value='#[{"statusCode": "500",&#10;	"message": error.errorType.identifier&#10;}]' doc:name="httpStatus-500" doc:id="4c9a714b-67e0-4648-ac1d-cbb1cd1756c7" variableName="Status"/>
+			<flow-ref doc:name="Flow Reference" doc:id="d2d1f0b2-4aa3-4154-b15e-2d152310e1dd" name="error-framework-sf-Sub_Flow"/>
+		</on-error-propagate>
+		<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="14f572eb-bee5-476b-b024-8b64e04ea553" type="SALESFORCE-COMPOSITE:TRANSACTION">
+			<set-variable value='#[{"statusCode": "500",&#10;	"message": error.errorType.identifier&#10;}]' doc:name="httpStatus-500" doc:id="b66cae8e-1729-4490-a677-e33ef343f1f0" variableName="Status"/>
+			<flow-ref doc:name="Flow Reference" doc:id="b80f28dc-202d-4a61-b2cc-e59978ffffd4" name="error-framework-sf-Sub_Flow"/>
+		</on-error-propagate>
+		<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="93bc7012-6a1e-425a-b949-dfda2081f338" type="SALESFORCE-COMPOSITE:TRANSFORMATION">
+			<set-variable value='#[{"statusCode": "500",&#10;	"message": error.errorType.identifier&#10;}]' doc:name="httpStatus-500" doc:id="c645bc83-c25c-45f2-a44f-4cdcab45ecee" variableName="Status"/>
+			<flow-ref doc:name="Flow Reference" doc:id="1b4d1029-0248-4bc9-b704-6cc37fb282db" name="error-framework-sf-Sub_Flow"/>
+		</on-error-propagate>
+		<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="ca91aaad-b3b5-4682-abda-ef5f412e1d3e" type="SALESFORCE-COMPOSITE:VALIDATION">
+			<set-variable value='#[{"statusCode": "500",&#10;	"message": error.errorType.identifier&#10;}]' doc:name="httpStatus-500" doc:id="08253adb-b9d8-434d-b10d-334ff4742511" variableName="Status"/>
+			<flow-ref doc:name="Flow Reference" doc:id="1e6d6233-fb34-4a00-8c30-8571351eaad2" name="error-framework-sf-Sub_Flow"/>
+		</on-error-propagate>
+		<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="7cc6414a-637c-4891-a5a1-91df6de5b3c8" type="SALESFORCE-COMPOSITE:UNKNOWN">
+			<set-variable value='#[{"statusCode": "500",&#10;	"message": error.errorType.identifier&#10;}]' doc:name="httpStatus-500" doc:id="1d346ab1-3bd0-4f39-bf3d-a55b78eef73a" variableName="Status"/>
+			<flow-ref doc:name="Flow Reference" doc:id="da9c72f6-ff20-48fc-a4b2-9d2b6f944903" name="error-framework-sf-Sub_Flow"/>
+		</on-error-propagate>
+		<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="0d8bcdec-a051-4a22-8ac2-e47083625239" type="ANY">
+			<set-variable value='#[{"statusCode": "500",&#10;	"message": error.errorType.identifier&#10;}]' doc:name="httpStatus-500" doc:id="d7c41b96-fe34-4f48-a29a-32894647c7f3" variableName="Status"/>
+			<flow-ref doc:name="Flow Reference" doc:id="3679d41b-bf80-416f-9c9f-71c7a97806aa" name="error-framework-sf-Sub_Flow"/>
+		</on-error-propagate>
+        
+</error-handler>
+	<sub-flow name="error-framework-sf-Sub_Flow" doc:id="c574fadf-5c03-48ef-89cb-864dcc9682ca" >
+		<ee:transform doc:name="Transform Message" doc:id="5f95364d-45f0-4ddc-ac19-f3a701c2b57a" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	"errorType": error.errorType.asString as String,
+	"errorCause": error.description as String,
+	"statusCode": vars.Status.statusCode,
+	"errorMessage": vars.Status.message
+}]]></ee:set-payload>
+			</ee:message>
+			<ee:variables >
+				<ee:set-variable variableName="httpStatus" ><![CDATA[vars.Status.statusCode]]></ee:set-variable>
+			</ee:variables>
+		</ee:transform>
+	</sub-flow>
+
+</mule>
